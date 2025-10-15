@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Personal Finance Tracker - Track your income, expenses, assets, and financial goals">
+    <meta name="theme-color" content="#2E7D32">
+    <title>Personal Finance Tracker</title>
+    
+    <!-- Bootstrap CSS for responsive design -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Our custom CSS -->
+    <link href="css/app.css" rel="stylesheet">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#dashboard">
+                <i class="fas fa-wallet me-2"></i>Finance Tracker
+            </a>
+            
+            <!-- Mobile menu button -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#assets" data-section="assets">
+                            <i class="fas fa-coins me-1"></i>Assets
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#expenses" data-section="expenses">
+                            <i class="fas fa-credit-card me-1"></i>Expenses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#income" data-section="income">
+                            <i class="fas fa-hand-holding-usd me-1"></i>Income
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#goals" data-section="goals">
+                            <i class="fas fa-bullseye me-1"></i>Goals
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reports" data-section="reports">
+                            <i class="fas fa-chart-bar me-1"></i>Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analytics" data-section="analytics">
+                            <i class="fas fa-chart-line me-1"></i>Analytics
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Security and Settings -->
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="securityDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-lock me-1"></i>Security
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="toggleEncryption">
+                                <i class="fas fa-shield-alt me-2"></i>Toggle Encryption
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="changePassword">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="exportData">
+                                <i class="fas fa-download me-2"></i>Export Data
+                            </a></li>
+                            <li><a class="dropdown-item" href="#" id="importData">
+                                <i class="fas fa-upload me-2"></i>Import Data
+                            </a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light btn-sm" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container-fluid mt-5 pt-4">
+        
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-success">
+                        <i class="fas fa-tachometer-alt me-3"></i>Financial Dashboard
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Metric Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card bg-primary text-white metric-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Total Assets</h5>
+                            <h2 class="card-text" id="totalAssets">₹0</h2>
+                            <i class="fas fa-coins metric-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card bg-success text-white metric-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Monthly Income</h5>
+                            <h2 class="card-text" id="monthlyIncome">₹0</h2>
+                            <i class="fas fa-hand-holding-usd metric-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card bg-warning text-white metric-card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Monthly Expenses</h5>
+                            <h2 class="card-text" id="monthlyExpenses">₹0</h2>
+                            <i class="fas fa-credit-card metric-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card text-white metric-card" id="netSavingsCard">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Net Savings</h5>
+                            <h2 class="card-text" id="netSavings">₹0</h2>
+                            <i class="fas fa-piggy-bank metric-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Quick Actions</h5>
+                            <div class="row">
+                                <div class="col-md-3 col-6 mb-2">
+                                    <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#quickExpenseModal">
+                                        <i class="fas fa-plus me-2"></i>Add Expense
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#quickIncomeModal">
+                                        <i class="fas fa-plus me-2"></i>Add Income
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <button class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#quickAssetModal">
+                                        <i class="fas fa-plus me-2"></i>Add Asset
+                                    </button>
+                                </div>
+                                <div class="col-md-3 col-6 mb-2">
+                                    <button class="btn btn-purple w-100" data-bs-toggle="modal" data-bs-target="#quickGoalModal">
+                                        <i class="fas fa-plus me-2"></i>Add Goal
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Goal Progress and Insights -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-bullseye me-2"></i>Goal Progress</h5>
+                        </div>
+                        <div class="card-body" id="goalProgress">
+                            <p class="text-muted">No goals set yet. Add some financial goals!</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Quick Insights</h5>
+                        </div>
+                        <div class="card-body" id="insights">
+                            <p class="text-muted">Add some transactions to see personalized insights!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Transactions -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Transactions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="recentTransactionsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No recent transactions</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Assets Section -->
+        <section id="assets" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-primary">
+                        <i class="fas fa-coins me-3"></i>Asset Management
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Add Asset Form -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Add/Update Asset</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="assetForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="assetName" class="form-label">Asset Name</label>
+                                        <input type="text" class="form-control" id="assetName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="assetType" class="form-label">Asset Type</label>
+                                        <select class="form-select" id="assetType" required>
+                                            <option value="">Select Type</option>
+                                            <option value="Bank Account">Bank Account</option>
+                                            <option value="FD">Fixed Deposit</option>
+                                            <option value="RD">Recurring Deposit</option>
+                                            <option value="Mutual Fund">Mutual Fund</option>
+                                            <option value="Provident Fund">Provident Fund</option>
+                                            <option value="Pension Fund">Pension Fund</option>
+                                            <option value="Endowment Fund">Endowment Fund</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="assetValue" class="form-label">Current Value (₹)</label>
+                                        <input type="number" class="form-control" id="assetValue" step="0.01" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>Add Asset
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Assets List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Current Assets</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="assetsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+                                            <th>Last Updated</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No assets added yet</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expenses Section -->
+        <section id="expenses" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-warning">
+                        <i class="fas fa-credit-card me-3"></i>Expense Tracking
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Add Expense Form -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0">Add Expense</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="expenseForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expenseDescription" class="form-label">Description</label>
+                                        <input type="text" class="form-control" id="expenseDescription" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="expenseAmount" class="form-label">Amount (₹)</label>
+                                        <input type="number" class="form-control" id="expenseAmount" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="expenseCategory" class="form-label">Category</label>
+                                        <select class="form-select" id="expenseCategory" required>
+                                            <option value="">Select Category</option>
+                                            <option value="Food & Dining">Food & Dining</option>
+                                            <option value="Transport">Transport</option>
+                                            <option value="Healthcare">Healthcare</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Utilities">Utilities</option>
+                                            <option value="Rent">Rent</option>
+                                            <option value="Insurance">Insurance</option>
+                                            <option value="Loan EMI">Loan EMI</option>
+                                            <option value="Miscellaneous">Miscellaneous</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="expenseType" class="form-label">Type</label>
+                                        <select class="form-select" id="expenseType" required>
+                                            <option value="Variable">Variable</option>
+                                            <option value="Fixed">Fixed</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="expenseDate" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="expenseDate" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-warning me-2">
+                                            <i class="fas fa-plus me-2"></i>Add Expense
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="copyFixedExpenses">
+                                            <i class="fas fa-copy me-2"></i>Copy Fixed from Last Month
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Expenses List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Expense History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="expensesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th>Type</th>
+                                            <th>Amount</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">No expenses recorded yet</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Income Section -->
+        <section id="income" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-success">
+                        <i class="fas fa-hand-holding-usd me-3"></i>Income Tracking
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Add Income Form -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Add Income</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="incomeForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="incomeSource" class="form-label">Source</label>
+                                        <input type="text" class="form-control" id="incomeSource" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="incomeAmount" class="form-label">Amount (₹)</label>
+                                        <input type="number" class="form-control" id="incomeAmount" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="incomeDate" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="incomeDate" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-plus me-2"></i>Add Income
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Income List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Income History</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="incomeTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Source</th>
+                                            <th>Amount</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No income recorded yet</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Goals Section -->
+        <section id="goals" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-purple">
+                        <i class="fas fa-bullseye me-3"></i>Financial Goals
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Add Goal Form -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-purple text-white">
+                            <h5 class="mb-0">Add Financial Goal</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="goalForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="goalName" class="form-label">Goal Name</label>
+                                        <input type="text" class="form-control" id="goalName" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="goalAmount" class="form-label">Target Amount (₹)</label>
+                                        <input type="number" class="form-control" id="goalAmount" step="0.01" required>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="goalDate" class="form-label">Target Date</label>
+                                        <input type="date" class="form-control" id="goalDate" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-purple">
+                                            <i class="fas fa-plus me-2"></i>Add Goal
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Goals List -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Your Goals</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="goalsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Goal</th>
+                                            <th>Target</th>
+                                            <th>Saved</th>
+                                            <th>Progress</th>
+                                            <th>Target Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">No goals set yet</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section id="reports" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-info">
+                        <i class="fas fa-chart-bar me-3"></i>Financial Reports
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Report Controls -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Report Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="reportYear" class="form-label">Year</label>
+                                    <select class="form-select" id="reportYear">
+                                        <!-- Options will be populated by JavaScript -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="reportMonth" class="form-label">Month</label>
+                                    <select class="form-select" id="reportMonth">
+                                        <option value="01">January</option>
+                                        <option value="02">February</option>
+                                        <option value="03">March</option>
+                                        <option value="04">April</option>
+                                        <option value="05">May</option>
+                                        <option value="06">June</option>
+                                        <option value="07">July</option>
+                                        <option value="08">August</option>
+                                        <option value="09">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3 d-flex align-items-end">
+                                    <button class="btn btn-info me-2" id="generateReport">
+                                        <i class="fas fa-file-alt me-2"></i>Generate Report
+                                    </button>
+                                    <button class="btn btn-outline-info me-2" id="exportReport">
+                                        <i class="fas fa-download me-2"></i>Export PDF
+                                    </button>
+                                    <button class="btn btn-outline-info" id="exportCSV">
+                                        <i class="fas fa-file-csv me-2"></i>Export CSV
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Report Display -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Report View</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="reportContent">
+                                <p class="text-muted text-center">Select year and month, then click "Generate Report" to view your financial summary.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="analytics" class="content-section" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="display-6 fw-bold text-dark">
+                        <i class="fas fa-chart-line me-3"></i>Financial Analytics
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Chart Selection -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">Analytics Dashboard</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group flex-wrap" role="group">
+                                <button type="button" class="btn btn-outline-primary active" data-chart="networth">
+                                    <i class="fas fa-chart-line me-1"></i>Net Worth
+                                </button>
+                                <button type="button" class="btn btn-outline-success" data-chart="income-expense">
+                                    <i class="fas fa-chart-bar me-1"></i>Income vs Expenses
+                                </button>
+                                <button type="button" class="btn btn-outline-warning" data-chart="categories">
+                                    <i class="fas fa-chart-pie me-1"></i>Expense Categories
+                                </button>
+                                <button type="button" class="btn btn-outline-info" data-chart="savings-rate">
+                                    <i class="fas fa-percentage me-1"></i>Savings Rate
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chart Display -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="analyticsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Quick Modals -->
+    
+    <!-- Quick Expense Modal -->
+    <div class="modal fade" id="quickExpenseModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Quick Add Expense</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quickExpenseForm">
+                        <div class="mb-3">
+                            <label for="quickExpenseDesc" class="form-label">Description</label>
+                            <input type="text" class="form-control" id="quickExpenseDesc" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quickExpenseAmount" class="form-label">Amount (₹)</label>
+                            <input type="number" class="form-control" id="quickExpenseAmount" step="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quickExpenseCategory" class="form-label">Category</label>
+                            <select class="form-select" id="quickExpenseCategory" required>
+                                <option value="Food & Dining">Food & Dining</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Shopping">Shopping</option>
+                                <option value="Entertainment">Entertainment</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Utilities">Utilities</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="quickExpenseForm" class="btn btn-success">Add Expense</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar quick modals for Income, Asset, and Goal would go here... -->
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Our JavaScript Files -->
+    <script src="js/data-manager.js"></script>
+    <script src="js/security.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/charts.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
